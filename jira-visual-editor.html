@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Описание идеи — визуальный режим</title>
+  <link rel="stylesheet" href="jira-wiki-visual.css?v=2">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: #fff; color: #172b4d; }
+    .page { max-width: 800px; margin: 0 auto; }
+    .form-row { margin-bottom: 16px; }
+    .form-row label, .form-label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 14px; color: #172b4d; }
+    .form-label span.required { color: #de350b; }
+    /* Поля ввода уже родительского блока — как в оригинале Jira */
+    .form-field { max-width: 500px; }
+    .form-field.form-field-description { max-width: 750px; }
+    input[type="text"] { width: 100%; padding: 8px 10px; font-size: 14px; border: 1px solid #dfe1e6; border-radius: 3px; box-sizing: border-box; }
+    .editor-toggle { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .editor-toggle .toggle-btn { padding: 4px 12px; font-size: 13px; border: 1px solid #dfe1e6; background: #f4f5f7; color: #42526e; cursor: pointer; border-radius: 3px; }
+    .editor-toggle .toggle-btn.active { background: #fff; border-color: #0052cc; color: #0052cc; }
+    .editor-toggle .toggle-btn:first-child { border-radius: 3px 0 0 3px; margin-right: -1px; }
+    .editor-toggle .toggle-btn:last-child { border-radius: 0 3px 3px 0; }
+    .editor-toggle .status { font-size: 12px; color: #6b778c; }
+    .btn-save { padding: 8px 16px; font-size: 14px; font-weight: 600; color: #fff; background: #0052cc; border: none; border-radius: 3px; cursor: pointer; }
+    .btn-save:hover { background: #0065ff; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 style="margin-top:0; font-size: 1.5em;">Дополнить идею</h1>
+
+    <div class="form-row">
+      <label for="summary" class="form-label">Тема <span class="required" aria-hidden="true">*</span></label>
+      <div class="form-field">
+        <input type="text" id="summary" value="Показывать инвестиционные идеи после совершения сделки" placeholder="Название темы">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="visual-container" class="form-label">Описание</label>
+      <div class="form-field form-field-description jira-visual-wrap">
+        <div class="jira-visual-toolbar" id="desc-toolbar" role="toolbar">
+          <div class="tb-group"><button type="button" aria-label="Стиль">Стиль</button></div>
+          <div class="tb-group">
+            <button type="button" class="tb-bold" aria-label="Полужирный" title="Полужирный (⌘+B)">B</button>
+            <button type="button" class="tb-italic" aria-label="Курсив" title="Курсив (⌘+I)">I</button>
+            <button type="button" class="tb-underline" aria-label="Подчеркнуть" title="Подчеркнуть (⌘+U)">U</button>
+          </div>
+          <div class="tb-group"><button type="button" aria-label="Цвет текста">A</button></div>
+          <div class="tb-group"><button type="button" aria-label="Ссылка">🔗</button></div>
+          <div class="tb-group"><button type="button" aria-label="Вложение">📎</button></div>
+          <div class="tb-group"><button type="button" aria-label="Маркированный список">•</button><button type="button" aria-label="Нумерованный список">1.</button></div>
+          <div class="tb-group"><button type="button" aria-label="Значки">😀</button><button type="button" aria-label="Другое">+</button></div>
+          <div class="tb-group" style="margin-left: auto;"><button type="button" aria-label="Скрыть панель инструментов">⇕</button></div>
+        </div>
+        <div id="visual-container"></div>
+        <textarea id="text-mode-source" class="text-mode-textarea" style="display:none; width:100%; min-height:220px; max-height:630px; padding:8px 12px; font-size:14px; line-height:1.5; border:none; border-radius:0; resize:vertical; font-family:inherit; box-sizing:border-box;" placeholder="Wiki-разметка"></textarea>
+      </div>
+      <div class="editor-toggle">
+        <button type="button" class="toggle-btn active" id="btn-visual" aria-pressed="true">Визуальный</button>
+        <button type="button" class="toggle-btn" id="btn-text" aria-pressed="false">Текст</button>
+        <span class="status" role="status">Визуальный режим</span>
+      </div>
+    </div>
+
+    <div class="form-row" style="margin-top: 20px;">
+      <button type="button" id="btn-save" class="btn-save">Сохранить</button>
+    </div>
+  </div>
+
+  <!-- Сюда можно вставить разметку: скрипт с id="wiki-source" и type="text/plain" -->
+  <script type="text/plain" id="wiki-source">h3. Проблематика
+{panel:title=Сейчас|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#fa8072|bgColor=#ffffff}
+По наблюдениям часть пользователей совершает одну-две сделки и дальше редко возвращается в приложение
+
+*Сколько таких пользователей сейчас? Это поможет ревьюеру понять потенциальное влияние идеи*
+
+Пользователи не всегда понимают, какие следующие действия делать — *откуда мы это знаем?*
+{panel}
+h3. Основные гипотезы
+{panel:title=Гипотеза 1|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#66cdaa|bgColor=#ffffff}
+Показывать пользователю инвестиционные идеи сразу после сделки.  Предлагать похожие инструменты или подборки, которые могут быть интересны.
+
+Это может помочь чаще заходить в приложение и совершать больше сделок
+
+*Ревьюер спросит ожидаемый эффект в %, приблизительно и навскидку*
+{panel}
+{panel:title=Я как клиент...|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#dcdcdc}
+h3. *UserStory*
+{panel:title=Я как клиент...|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#dcdcdc|bgColor=#ffffff}
+{panel}
+*Смотрим глазами пользователя: в чем ценность?*
+{panel}
+{panel:title=Я как БКС...|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#c0c0c0|bgColor=#ffffff}
+*Какую бизнес-задачу решаем?*
+{panel}
+h3. *WSJF*
+{panel:title=Audience|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#ffe4c4|bgColor=#ffffff}
+*Не заполнена вкладка WSJF — для ревью это критично*
+
+{panel}
+{panel:title=Value|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#ffdead|bgColor=#ffffff}
+
+{panel}
+{panel:title=Risk reduction|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#f5deb3|bgColor=#ffffff}
+
+{panel}
+{panel:title=Time criticality|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#deb887|bgColor=#ffffff}
+
+{panel}
+h3. *Запуск фичи*
+{panel:title=АБ тестирование|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#87ceeb|bgColor=#ffffff}
+
+{panel}
+{panel:title=Онбординг фичи|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#87ceeb|bgColor=#ffffff}
+
+{panel}
+h3. *Визуал*
+{panel:title=Черновики и прототипы|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#ff00ff|bgColor=#ffffff}
+
+{panel}
+h3. *Материалы*
+{panel:title=Voice of customer|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#e74c3c|bgColor=#ffffff}
+
+{panel}
+{panel:title=Результаты исследований|borderStyle=solid|borderColor=#fbd9ff|titleBGColor=#28b463|bgColor=#ffffff}
+
+{panel}</script>
+
+  <script src="jira-wiki-render.js?v=2"></script>
+  <script>
+    (function () {
+      var container = document.getElementById('visual-container');
+      var sourceEl = document.getElementById('wiki-source');
+      var wiki = (typeof window.JIRA_WIKI_INITIAL === 'string' && window.JIRA_WIKI_INITIAL)
+        ? window.JIRA_WIKI_INITIAL
+        : (sourceEl ? sourceEl.textContent.trim() : '');
+      var editor = window.JiraWikiRender.initVisualEditor(container, wiki);
+
+      var textArea = document.getElementById('text-mode-source');
+      if (textArea) textArea.value = wiki;
+
+      var toolbar = document.getElementById('desc-toolbar');
+      if (toolbar && editor) {
+        toolbar.querySelector('.tb-bold').addEventListener('click', function () { editor.focus(); document.execCommand('bold', false, null); });
+        toolbar.querySelector('.tb-italic').addEventListener('click', function () { editor.focus(); document.execCommand('italic', false, null); });
+        toolbar.querySelector('.tb-underline').addEventListener('click', function () { editor.focus(); document.execCommand('underline', false, null); });
+      }
+
+      var btnVisual = document.getElementById('btn-visual');
+      var btnText = document.getElementById('btn-text');
+      var statusEl = document.querySelector('.editor-toggle .status');
+      if (btnVisual && btnText) {
+        btnVisual.addEventListener('click', function () {
+          btnVisual.classList.add('active'); btnVisual.setAttribute('aria-pressed', 'true');
+          btnText.classList.remove('active'); btnText.setAttribute('aria-pressed', 'false');
+          container.style.display = ''; if (toolbar) toolbar.style.display = ''; if (textArea) textArea.style.display = 'none';
+          if (statusEl) statusEl.textContent = 'Визуальный режим';
+        });
+        btnText.addEventListener('click', function () {
+          btnText.classList.add('active'); btnText.setAttribute('aria-pressed', 'true');
+          btnVisual.classList.remove('active'); btnVisual.setAttribute('aria-pressed', 'false');
+          container.style.display = 'none'; if (toolbar) toolbar.style.display = 'none'; if (textArea) { textArea.style.display = 'block'; textArea.value = wiki; }
+          if (statusEl) statusEl.textContent = 'Текстовый режим';
+        });
+      }
+      var btnSave = document.getElementById('btn-save');
+      if (btnSave) btnSave.addEventListener('click', function () { window.location.href = 'jira-idea-board-usertest.html'; });
+    })();
+  </script>
+</body>
+</html>

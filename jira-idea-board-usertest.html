@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea.KF — прототип для юзертеста</title>
+  <style>
+    /* Jira-like design tokens (from saved Jira page) */
+    :root {
+      --ds-background-neutral: #091e420f;
+      --ds-background-neutral-hovered: #091e4224;
+      --ds-border: #091e4221;
+      --ds-text: #172b4d;
+      --ds-text-subtle: #44546f;
+      --ds-background-brand-bold: #0c66e4;
+      --ds-background-brand-bold-hovered: #0055cc;
+      --ds-background-inverse-subtle: #091e4224;
+      --jira-color-menuBackgroundColour: #f1f2f4;
+      --jira-color-textHeadingColour: #172b4d;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+      font-size: 14px;
+      color: var(--ds-text);
+    }
+
+    body {
+      margin: 0;
+      background: var(--jira-color-menuBackgroundColour);
+      min-height: 100vh;
+    }
+
+    /* Header bar — Jira-style */
+    .board-header {
+      background: #0747a6;
+      color: #deebff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25);
+    }
+    .board-header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* Board container */
+    .board-container {
+      padding: 24px;
+      overflow-x: auto;
+    }
+    .board {
+      display: flex;
+      gap: 16px;
+      min-height: 400px;
+      align-items: flex-start;
+    }
+
+    /* Column */
+    .column {
+      flex: 0 0 280px;
+      background: var(--ds-background-neutral);
+      border-radius: 8px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--ds-border);
+    }
+    .column.drag-over {
+      background: #deebff;
+      border-color: var(--ds-background-brand-bold);
+      box-shadow: inset 0 0 0 2px var(--ds-background-brand-bold);
+    }
+    .column-header {
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--jira-color-textHeadingColour);
+      border-bottom: 1px solid var(--ds-border);
+      border-radius: 8px 8px 0 0;
+      background: #fff;
+    }
+    .column-body {
+      padding: 8px;
+      flex: 1;
+      min-height: 80px;
+    }
+
+    /* Card — Jira issue card style */
+    .card {
+      background: #fff;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25);
+      border: 1px solid var(--ds-border);
+      cursor: grab;
+      user-select: none;
+    }
+    .card:active {
+      cursor: grabbing;
+    }
+    .card.dragging {
+      opacity: 0.85;
+      box-shadow: 0 4px 12px rgba(9, 30, 66, 0.2);
+      transform: scale(1.02);
+    }
+    .card-key {
+      font-size: 11px;
+      color: var(--ds-text-subtle);
+      margin-bottom: 4px;
+    }
+    .card-summary {
+      font-weight: 500;
+      color: var(--ds-text);
+    }
+
+    /* Jira-style popup (inline dialog / modal) */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 30, 66, 0.54);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .popup-overlay.visible {
+      display: flex;
+    }
+    .popup {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(9, 30, 66, 0.25);
+      min-width: 400px;
+      max-width: 480px;
+      overflow: hidden;
+    }
+    .popup-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--ds-border);
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--ds-text);
+    }
+    .popup-body {
+      padding: 20px;
+      color: var(--ds-text);
+      line-height: 1.5;
+    }
+    .popup-body p {
+      margin: 0 0 12px;
+    }
+    .popup-body p:last-child {
+      margin-bottom: 0;
+    }
+    .popup-body ul {
+      margin: 0 0 12px;
+      padding-left: 20px;
+    }
+    .popup-body li {
+      margin-bottom: 6px;
+    }
+    .popup-footer {
+      padding: 12px 20px 20px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+    }
+    .btn-primary {
+      background: var(--ds-background-brand-bold);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--ds-background-brand-bold-hovered);
+    }
+    .btn-secondary {
+      background: var(--ds-background-neutral);
+      color: var(--ds-text);
+    }
+    .btn-secondary:hover {
+      background: var(--ds-background-neutral-hovered);
+    }
+  </style>
+</head>
+<body>
+  <header class="board-header">
+    <h1>Idea.KF</h1>
+    <span style="opacity: 0.9;">Прототип для юзертеста</span>
+  </header>
+
+  <main class="board-container">
+    <div class="board">
+      <div class="column" data-column="in-progress" id="col-in-progress">
+        <div class="column-header">In Progress</div>
+        <div class="column-body" id="body-in-progress">
+          <div class="card" id="idea-card" draggable="true" data-issue-key="MB-123">
+            <div class="card-key">MB-123</div>
+            <div class="card-summary">Показывать инвестиционные идеи после сделки</div>
+          </div>
+        </div>
+      </div>
+      <div class="column" data-column="ready-for-review" id="col-ready-for-review">
+        <div class="column-header">Ready for Review</div>
+        <div class="column-body" id="body-ready-for-review"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Jira-style popup при перетаскивании в Ready for Review -->
+  <div class="popup-overlay" id="review-popup">
+    <div class="popup">
+      <div class="popup-header">Повысьте шанс прохождения ревью</div>
+      <div class="popup-body">
+        <p>Скорее всего, ревьюер попросит:</p>
+        <ul>
+          <li>Указать метрику, на которую должна повлиять гипотеза</li>
+          <li>Коротко описать, за счет чего изменение должно привести к росту метрики</li>
+          <li>Добавить ожидаемый эффект (например: +3–5% к activation rate)</li>
+        </ul>
+        <p>Доработка займет 5 минут</p>
+      </div>
+      <div class="popup-footer">
+        <button type="button" class="btn btn-secondary" id="btn-submit-as-is">Отправить как есть</button>
+        <button type="button" class="btn btn-primary" id="btn-suggestions">Дополнить идею</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const card = document.getElementById('idea-card');
+      const colInProgress = document.getElementById('col-in-progress');
+      const colReadyForReview = document.getElementById('col-ready-for-review');
+      const bodyInProgress = document.getElementById('body-in-progress');
+      const bodyReadyForReview = document.getElementById('body-ready-for-review');
+      const popup = document.getElementById('review-popup');
+      const btnSuggestions = document.getElementById('btn-suggestions');
+      const btnSubmitAsIs = document.getElementById('btn-submit-as-is');
+
+      let draggedCard = null;
+      let dropTargetColumn = null;
+      let pendingMove = null; // { card, fromBody, toBody } после drop на Ready for Review
+
+      // —— Drag and drop ——
+      card.addEventListener('dragstart', function (e) {
+        draggedCard = card;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', card.id);
+        card.classList.add('dragging');
+      });
+
+      card.addEventListener('dragend', function () {
+        card.classList.remove('dragging');
+        colInProgress.classList.remove('drag-over');
+        colReadyForReview.classList.remove('drag-over');
+        draggedCard = null;
+        dropTargetColumn = null;
+      });
+
+      [colInProgress, colReadyForReview].forEach(function (col) {
+        col.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          col.classList.add('drag-over');
+          dropTargetColumn = col;
+        });
+        col.addEventListener('dragleave', function () {
+          col.classList.remove('drag-over');
+          if (dropTargetColumn === col) dropTargetColumn = null;
+        });
+        col.addEventListener('drop', function (e) {
+          e.preventDefault();
+          col.classList.remove('drag-over');
+          if (!draggedCard) return;
+          const columnId = col.getAttribute('data-column');
+          const fromBody = bodyInProgress.contains(draggedCard) ? bodyInProgress : bodyReadyForReview;
+          const toBody = col.querySelector('.column-body');
+
+          if (columnId === 'ready-for-review' && fromBody === bodyInProgress) {
+            // Перетащили в Ready for Review — показываем попап, не перемещаем сразу
+            pendingMove = { card: draggedCard, fromBody, toBody };
+            popup.classList.add('visible');
+          } else {
+            toBody.appendChild(draggedCard);
+          }
+          dropTargetColumn = null;
+        });
+      });
+
+      btnSubmitAsIs.addEventListener('click', function () {
+        pendingMove = null;
+        popup.classList.remove('visible');
+        window.location.href = 'jira-board-review.html';
+      });
+
+      btnSuggestions.addEventListener('click', function () {
+        pendingMove = null;
+        popup.classList.remove('visible');
+        window.location.href = 'jira-visual-editor.html';
+      });
+
+      // Закрытие попапа по клику на overlay (отмена = не перемещать)
+      popup.addEventListener('click', function (e) {
+        if (e.target === popup) {
+          popup.classList.remove('visible');
+          pendingMove = null;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
