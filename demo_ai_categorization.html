@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Как AI разбирает отзывы в приложении</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --border: #2d3a4f;
+      --text: #e7ecf3;
+      --muted: #8b9cb3;
+      --accent: #5b9cf5;
+      --green: #3dd68c;
+      --amber: #f5b83d;
+      --red: #f07178;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-size: 1.6rem; margin: 0 0 0.5rem; }
+    .lead { color: var(--muted); margin-bottom: 1.5rem; }
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .hero dl { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; margin: 0.75rem 0 0; }
+    .hero dt { color: var(--muted); }
+    .nav {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .nav a {
+      color: var(--accent);
+      text-decoration: none;
+      padding: 0.35rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.85rem;
+    }
+    .nav a:hover { background: var(--panel); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .card-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 1rem; padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .card-head h2 { margin: 0.25rem 0 0; font-size: 1.1rem; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+    }
+    .meta { text-align: right; font-size: 0.85rem; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+    .panel { padding: 1.25rem; }
+    .input-panel { border-right: 1px solid var(--border); background: #151d28; }
+    @media (max-width: 800px) { .input-panel { border-right: none; border-bottom: 1px solid var(--border); } }
+    .panel h3 { margin: 0 0 0.75rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+    blockquote {
+      margin: 0;
+      padding: 0.75rem 1rem;
+      border-left: 3px solid var(--accent);
+      background: #0f1419;
+      border-radius: 0 8px 8px 0;
+      white-space: pre-wrap;
+    }
+    .kv { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.35rem 0.75rem; margin: 0 0 1rem; font-size: 0.9rem; }
+    .kv dt { color: var(--muted); }
+    .kv dd { margin: 0; }
+    .reason { font-size: 0.95rem; margin: 0.75rem 0 0; color: #c5d0de; line-height: 1.5; }
+    .also, .flags { font-size: 0.9rem; margin: 0.5rem 0 0; color: var(--muted); }
+    .flags { color: var(--amber); }
+    footer { margin-top: 2rem; color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Как AI разбирает отзывы в приложении</h1>
+    <p class="lead">
+      Ниже — реальные отзывы пользователей за март–май 2026.
+      AI читает текст и предлагает, в какой раздел продукта передать обращение и кому из PM.
+    </p>
+
+    <section class="hero">
+      <p>На проверочной выборке из 61 отзыва, размеченных вручную, AI в <strong>97%</strong> случаев угадал нужный раздел.</p>
+    </section>
+
+    <nav class="nav"><a href="#ex-1">Хочет уйти, причина неясна</a>
+<a href="#ex-2">Злость из-за пополнения</a>
+<a href="#ex-3">Деньги после вывода не появились</a>
+<a href="#ex-4">Графики и таймфреймы</a>
+<a href="#ex-5">График на телефоне и на сайте</a>
+<a href="#ex-6">Удобство торговли</a>
+<a href="#ex-7">Не принимает код из СМС</a>
+<a href="#ex-8">Приложение вылетает</a>
+<a href="#ex-9">Не работает отпечаток</a>
+<a href="#ex-10">Не открывается счёт</a>
+<a href="#ex-11">Похвалили терминал</a>
+<a href="#ex-12">Слишком мало деталей</a>
+<a href="#ex-13">Анализ портфеля</a></nav>
+
+    
+    <article class="card" id="ex-1">
+      <header class="card-head">
+        <div>
+          <span class="tag">Хочет уйти, причина неясна</span>
+          <h2>Хочет уйти, причина неясна</h2>
+        </div>
+        <div class="meta">2026-03-23</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>как закрыть иис счёт?</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Нужен ручной разбор</strong></dd>
+            <dt>Кому передать</dt><dd>Уточнить ответственного</dd>
+            <dt>Уверенность</dt><dd>Нужен разбор</dd>
+          </dl>
+          
+          <p class="flags">Риск ухода клиента · Мало деталей в тексте · Важно для руководства</p>
+          <p class="reason">Человек хочет закрыть счёт, но не объясняет, что именно не устроило. Сначала — внимание руководства, раздел продукта уточняем отдельно.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-2">
+      <header class="card-head">
+        <div>
+          <span class="tag">Злость из-за пополнения</span>
+          <h2>Злость из-за пополнения</h2>
+        </div>
+        <div class="meta">2026-03-09</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Пополнил , зачисление так и не пришли , операторы не занимаются своей работой , сайт говно !</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Выводы и пополнения</strong></dd>
+            <dt>Кому передать</dt><dd>PM выводов и пополнений</dd>
+            <dt>Уверенность</dt><dd>Средняя уверенность</dd>
+          </dl>
+          <p class="also"><strong>Также смотреть:</strong> Поддержка</p>
+          <p class="flags">Риск ухода клиента · Важно для руководства</p>
+          <p class="reason">Деньги не зачислились после пополнения — это про выводы и пополнения. Тон злой, есть риск ухода; руководству тоже стоит знать.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-3">
+      <header class="card-head">
+        <div>
+          <span class="tag">Деньги после вывода не появились</span>
+          <h2>Деньги после вывода не появились</h2>
+        </div>
+        <div class="meta">2026-03-30</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Нихрена ваша поддержка не помогает !!!  Заявка по выводу денег исполнена, рабочий день прошел, деньги так и не доступны для вывода!!!!</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Выводы и пополнения</strong></dd>
+            <dt>Кому передать</dt><dd>PM выводов и пополнений</dd>
+            <dt>Уверенность</dt><dd>Уверен</dd>
+          </dl>
+          
+          
+          <p class="reason">Понятная жалоба на вывод: заявка исполнена, а деньги недоступны. Передаём PM по денежным операциям.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-4">
+      <header class="card-head">
+        <div>
+          <span class="tag">Графики и таймфреймы</span>
+          <h2>Графики и таймфреймы</h2>
+        </div>
+        <div class="meta">2026-03-30</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Сегодня минимальный тайм фрейм - день. Зачем нужны такие графики??? Полнейшее неприятие этого. Ваш бот настаивает, что это не ошибка.</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Рынки в приложении</strong></dd>
+            <dt>Кому передать</dt><dd>PM Рынков в мобилке</dd>
+            <dt>Уверенность</dt><dd>Средняя уверенность</dd>
+          </dl>
+          <p class="also"><strong>Также смотреть:</strong> Рынки на вебе, Веб-терминал, Терминал</p>
+          <p class="flags">Несколько возможных владельцев</p>
+          <p class="reason">Жалоба на график в мобильном приложении. Похожая функция есть и на вебе — их команд тоже стоит предупредить.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-5">
+      <header class="card-head">
+        <div>
+          <span class="tag">График на телефоне и на сайте</span>
+          <h2>График на телефоне и на сайте</h2>
+        </div>
+        <div class="meta">2026-03-30</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>1) Было бы здорово добавить синхронизацию графика веб версии и мобильной (нарисовал уровни в веб версии - они отображаются на мобильном графике).
+2) На мобильном графике пропадают горизонтальные уровни, нарисованные ранее, при уходе в крайнее правое положение.
+3) Очень мало инструментов для тех. анализа. Было бы неплохо добавить  хотя бы несколько инструментов: &quot;Линейка&quot;, &quot;Длинная позиция&quot; и &quot;Короткая позиция&quot; для быстрого подсчёта RR.
+4) При входе/выходе с мобильного графика сбрасываются масштабы индикаторов на графике (высота шкал индикаторов). При каждом заходе на график нужно постоянно расширять/сужать каждый индикатор - это не  критично, но не очень удобно.</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Рынки в приложении</strong></dd>
+            <dt>Кому передать</dt><dd>PM Рынков в мобилке</dd>
+            <dt>Уверенность</dt><dd>Средняя уверенность</dd>
+          </dl>
+          <p class="also"><strong>Также смотреть:</strong> Рынки на вебе, Веб-терминал, Терминал</p>
+          <p class="flags">Несколько возможных владельцев</p>
+          <p class="reason">Несколько замечаний про график: синхронизация с вебом, инструменты анализа, сброс настроек. Основной адресат — мобильные рынки, веб и терминал — на заметке.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-6">
+      <header class="card-head">
+        <div>
+          <span class="tag">Удобство торговли</span>
+          <h2>Удобство торговли</h2>
+        </div>
+        <div class="meta">2026-03-30</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Сделайте, пожалуйста, прямой переход из карточки фьючерса на доступные на него опционы, это очень удобно и упростит и убыстрит работу с рынком и заявками. Благодарю.</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Торговые заявки</strong></dd>
+            <dt>Кому передать</dt><dd>PM Рынков (мобилка)</dd>
+            <dt>Уверенность</dt><dd>Средняя уверенность</dd>
+          </dl>
+          <p class="also"><strong>Также смотреть:</strong> Рынки в приложении</p>
+          <p class="flags">Скорее позитив</p>
+          <p class="reason">Просьба об удобной навигации между фьючерсом и опционами — это про торговые заявки, тон скорее конструктивный.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-7">
+      <header class="card-head">
+        <div>
+          <span class="tag">Не принимает код из СМС</span>
+          <h2>Не принимает код из СМС</h2>
+        </div>
+        <div class="meta">2026-03-16</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Все то же самое приложен е недает продать непойму в чем дело, пишет неверный код? Код отправляю тот который мне при шел?!</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Подтверждение по СМС</strong></dd>
+            <dt>Кому передать</dt><dd>техническая группа</dd>
+            <dt>Уверенность</dt><dd>Средняя уверенность</dd>
+          </dl>
+          <p class="also"><strong>Также смотреть:</strong> Торговые заявки</p>
+          <p class="flags">Несколько возможных владельцев</p>
+          <p class="reason">Не удаётся продать из‑за кода из СМС — в первую очередь команда подтверждения операций; заявки — на втором плане.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-8">
+      <header class="card-head">
+        <div>
+          <span class="tag">Приложение вылетает</span>
+          <h2>Приложение вылетает</h2>
+        </div>
+        <div class="meta">2026-03-16</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Здравствуйте! За день уже  3 раз вылетает профиль в приложении и с последующим полной авторизацией, что с ерунда с приложением происходит ? Мне конечно не сложно, но как-то напрягает…!</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Стабильность приложения</strong></dd>
+            <dt>Кому передать</dt><dd>Уточнить ответственного</dd>
+            <dt>Уверенность</dt><dd>Нужен разбор</dd>
+          </dl>
+          <p class="also"><strong>Также смотреть:</strong> Вход в приложение</p>
+          <p class="flags">Несколько возможных владельцев</p>
+          <p class="reason">Раздел вылетает и заставляет заново входить — похоже на нестабильность, но может быть и вход в приложение. Нужно уточнить ответственного.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-9">
+      <header class="card-head">
+        <div>
+          <span class="tag">Не работает отпечаток</span>
+          <h2>Не работает отпечаток</h2>
+        </div>
+        <div class="meta">2026-03-09</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>захожу в приложение раз в 1-2 месяца, каждый раз не срабатывает авторизация по отпечатку пальца. просто ничего не происходит. приходится выходить из приложения и заново проходить полный логин по номеру телефона паролю SMS и подключать авторизацию по отпечатку пальца.</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Вход в приложение</strong></dd>
+            <dt>Кому передать</dt><dd>Уточнить ответственного</dd>
+            <dt>Уверенность</dt><dd>Средняя уверенность</dd>
+          </dl>
+          
+          
+          <p class="reason">Отпечаток не срабатывает при редком входе — тема входа в приложение. Кому именно внутри IT — уточняем.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-10">
+      <header class="card-head">
+        <div>
+          <span class="tag">Не открывается счёт</span>
+          <h2>Не открывается счёт</h2>
+        </div>
+        <div class="meta">2026-04-13</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Не удается открыть независимый счёт для моих родителей. во время регистрации на шаге два всплывает следующее окно. попытки регистрации производились посредством сайта, мобильного приложения. Прошу вернуться с объяснением причин возникновения и как это исправить</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Регистрация и первые шаги</strong></dd>
+            <dt>Кому передать</dt><dd>Уточнить ответственного</dd>
+            <dt>Уверенность</dt><dd>Средняя уверенность</dd>
+          </dl>
+          
+          
+          <p class="reason">Человек застрял на регистрации и не может открыть счёт — это воронка для новых клиентов.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-11">
+      <header class="card-head">
+        <div>
+          <span class="tag">Похвалили терминал</span>
+          <h2>Похвалили терминал</h2>
+        </div>
+        <div class="meta">2026-03-23</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Терминал стал гораздо лучше и удобнее. Спасибо персоналу ща терминал.</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Веб-терминал</strong></dd>
+            <dt>Кому передать</dt><dd>Николай Т.</dd>
+            <dt>Уверенность</dt><dd>Средняя уверенность</dd>
+          </dl>
+          <p class="also"><strong>Также смотреть:</strong> Рынки на вебе, Веб-терминал, Терминал</p>
+          <p class="flags">Скорее позитив · Несколько возможных владельцев</p>
+          <p class="reason">Короткая похвала веб-терминала — полезный сигнал для Николая Т. и смежных команд на вебе.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-12">
+      <header class="card-head">
+        <div>
+          <span class="tag">Слишком мало деталей</span>
+          <h2>Слишком мало деталей</h2>
+        </div>
+        <div class="meta">2026-03-30</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>неправильно отображается информация</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Нужен ручной разбор</strong></dd>
+            <dt>Кому передать</dt><dd>Уточнить ответственного</dd>
+            <dt>Уверенность</dt><dd>Нужен разбор</dd>
+          </dl>
+          <p class="also"><strong>Также смотреть:</strong> Стабильность приложения, Приложение в целом</p>
+          <p class="flags">Мало деталей в тексте</p>
+          <p class="reason">Текст слишком общий — непонятно, какой экран и что именно сломано. Нужен ручной разбор, а не угадывание.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <article class="card" id="ex-13">
+      <header class="card-head">
+        <div>
+          <span class="tag">Анализ портфеля</span>
+          <h2>Анализ портфеля</h2>
+        </div>
+        <div class="meta">2026-03-23</div>
+      </header>
+      <div class="grid">
+        <section class="panel input-panel">
+          <h3>Что написал пользователь</h3>
+          <blockquote>Добавьте , пожалуйста , сравнение портфеля с индексами , желательно полной доходности</blockquote>
+        </section>
+        <section class="panel output-panel">
+          <h3>Как AI это понял</h3>
+          <dl class="kv">
+            <dt>Раздел</dt><dd><strong>Портфель</strong></dd>
+            <dt>Кому передать</dt><dd>PM Портфеля</dd>
+            <dt>Уверенность</dt><dd>Уверен</dd>
+          </dl>
+          
+          <p class="flags">Скорее позитив</p>
+          <p class="reason">Просьба добавить сравнение портфеля с индексами — понятный запрос к разделу портфеля.</p>
+        </section>
+      </div>
+    </article>
+    
+
+    <footer>
+      <a href="feedback_insights.html">Сводка по отзывам и гипотезы →</a>
+    </footer>
+  </div>
+</body>
+</html>
